@@ -59,7 +59,7 @@ import java.nio.FloatBuffer;
  * currently part of CTS.)
  */
 public class ExtractMpegFramesEgl14Test extends AndroidTestCase {
-    private static final String TAG = "ExtractMpegFramesTest";
+    private static final String TAG = "ExtractMpegFramesEgl14Test";
     private static final boolean VERBOSE = false;           // lots of logging
 
     // where to find files (note: requires WRITE_EXTERNAL_STORAGE permission)
@@ -201,7 +201,7 @@ public class ExtractMpegFramesEgl14Test extends AndroidTestCase {
      * Work loop.
      */
     static void doExtract(MediaExtractor extractor, int trackIndex, MediaCodec decoder,
-            CodecOutputSurface outputSurface) throws IOException {
+                          CodecOutputSurface outputSurface) throws IOException {
         final int TIMEOUT_USEC = 10000;
         ByteBuffer[] decoderInputBuffers = decoder.getInputBuffers();
         MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
@@ -296,7 +296,7 @@ public class ExtractMpegFramesEgl14Test extends AndroidTestCase {
 
         int numSaved = (MAX_FRAMES < decodeCount) ? MAX_FRAMES : decodeCount;
         Log.d(TAG, "Saving " + numSaved + " frames took " +
-            (frameSaveTime / numSaved / 1000) + " us per frame");
+                (frameSaveTime / numSaved / 1000) + " us per frame");
     }
 
 
@@ -313,7 +313,7 @@ public class ExtractMpegFramesEgl14Test extends AndroidTestCase {
      */
     private static class CodecOutputSurface
             implements SurfaceTexture.OnFrameAvailableListener {
-        private STextureRender mTextureRender;
+        private ExtractMpegFramesEgl14Test.STextureRender mTextureRender;
         private SurfaceTexture mSurfaceTexture;
         private Surface mSurface;
 
@@ -349,7 +349,7 @@ public class ExtractMpegFramesEgl14Test extends AndroidTestCase {
          * Creates interconnected instances of TextureRender, SurfaceTexture, and Surface.
          */
         private void setup() {
-            mTextureRender = new STextureRender();
+            mTextureRender = new ExtractMpegFramesEgl14Test.STextureRender();
             mTextureRender.surfaceCreated();
 
             if (VERBOSE) Log.d(TAG, "textureID=" + mTextureRender.getTextureId());
@@ -562,7 +562,7 @@ public class ExtractMpegFramesEgl14Test extends AndroidTestCase {
 
             mPixelBuf.rewind();
             GLES20.glReadPixels(0, 0, mWidth, mHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE,
-                mPixelBuf);
+                    mPixelBuf);
 
             BufferedOutputStream bos = null;
             try {
@@ -603,32 +603,32 @@ public class ExtractMpegFramesEgl14Test extends AndroidTestCase {
         private final float[] mTriangleVerticesData = {
                 // X, Y, Z, U, V
                 -1.0f, -1.0f, 0, 0.f, 0.f,
-                 1.0f, -1.0f, 0, 1.f, 0.f,
+                1.0f, -1.0f, 0, 1.f, 0.f,
                 -1.0f,  1.0f, 0, 0.f, 1.f,
-                 1.0f,  1.0f, 0, 1.f, 1.f,
+                1.0f,  1.0f, 0, 1.f, 1.f,
         };
 
         private FloatBuffer mTriangleVertices;
 
         private static final String VERTEX_SHADER =
                 "uniform mat4 uMVPMatrix;\n" +
-                "uniform mat4 uSTMatrix;\n" +
-                "attribute vec4 aPosition;\n" +
-                "attribute vec4 aTextureCoord;\n" +
-                "varying vec2 vTextureCoord;\n" +
-                "void main() {\n" +
-                "    gl_Position = uMVPMatrix * aPosition;\n" +
-                "    vTextureCoord = (uSTMatrix * aTextureCoord).xy;\n" +
-                "}\n";
+                        "uniform mat4 uSTMatrix;\n" +
+                        "attribute vec4 aPosition;\n" +
+                        "attribute vec4 aTextureCoord;\n" +
+                        "varying vec2 vTextureCoord;\n" +
+                        "void main() {\n" +
+                        "    gl_Position = uMVPMatrix * aPosition;\n" +
+                        "    vTextureCoord = (uSTMatrix * aTextureCoord).xy;\n" +
+                        "}\n";
 
         private static final String FRAGMENT_SHADER =
                 "#extension GL_OES_EGL_image_external : require\n" +
-                "precision mediump float;\n" +      // highp here doesn't seem to matter
-                "varying vec2 vTextureCoord;\n" +
-                "uniform samplerExternalOES sTexture;\n" +
-                "void main() {\n" +
-                "    gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +
-                "}\n";
+                        "precision mediump float;\n" +      // highp here doesn't seem to matter
+                        "varying vec2 vTextureCoord;\n" +
+                        "uniform samplerExternalOES sTexture;\n" +
+                        "void main() {\n" +
+                        "    gl_FragColor = texture2D(sTexture, vTextureCoord);\n" +
+                        "}\n";
 
         private float[] mMVPMatrix = new float[16];
         private float[] mSTMatrix = new float[16];
